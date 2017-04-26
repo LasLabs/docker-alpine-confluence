@@ -13,40 +13,35 @@ ENV RUN_GROUP=confluence
 
 # Setup Confluence User & Group
 RUN addgroup -S "${RUN_GROUP}" \
-    && adduser -S -s /bin/false -G "${RUN_GROUP}" "${RUN_USER}"
-
+    && adduser -S -s /bin/false -G "${RUN_GROUP}" "${RUN_USER}" \
 # Install build deps
-RUN apk add --no-cache --virtual .build-deps \
-    curl \
-    tar
-
+    && apk add --no-cache --virtual .build-deps \
+        curl \
+        tar \
 # Create home, install, and conf dirs
-RUN mkdir -p "${CONFLUENCE_HOME}" \
-             "${CONFLUENCE_INSTALL}/conf"
-
-# Download assets and extract to appropriate locations
-RUN curl -Ls "${CONFLUENCE_DOWNLOAD_URI}" \
-    | tar -xz --directory "${CONFLUENCE_INSTALL}" \
-        --strip-components=1 --no-same-owner
-
-# Setup permissions
-RUN chmod -R 700 "${CONFLUENCE_HOME}" \
+    && mkdir -p "${CONFLUENCE_HOME}" \
                  "${CONFLUENCE_INSTALL}/conf" \
-                 "${CONFLUENCE_INSTALL}/temp" \
-                 "${CONFLUENCE_INSTALL}/logs" \
-                 "${CONFLUENCE_INSTALL}/work" \
+# Download assets and extract to appropriate locations
+    && curl -Ls "${CONFLUENCE_DOWNLOAD_URI}" \
+        | tar -xz --directory "${CONFLUENCE_INSTALL}" \
+            --strip-components=1 --no-same-owner \
+# Setup permissions
+    && chmod -R 700 "${CONFLUENCE_HOME}" \
+                     "${CONFLUENCE_INSTALL}/conf" \
+                     "${CONFLUENCE_INSTALL}/temp" \
+                     "${CONFLUENCE_INSTALL}/logs" \
+                     "${CONFLUENCE_INSTALL}/work" \
     && chown -R ${RUN_USER}:${RUN_GROUP} "${CONFLUENCE_HOME}" \
                                          "${CONFLUENCE_INSTALL}/conf" \
                                          "${CONFLUENCE_INSTALL}/temp" \
                                          "${CONFLUENCE_INSTALL}/logs" \
-                                         "${CONFLUENCE_INSTALL}/work"
-
+                                         "${CONFLUENCE_INSTALL}/work" \
 # Update configs
-RUN echo -e "\nconfluence.home=${CONFLUENCE_HOME}" >> "${CONFLUENCE_INSTALL}/confluence/WEB-INF/classes/confluence-init.properties" \
-    && touch -d "@0" "${CONFLUENCE_INSTALL}/conf/server.xml"
-
+    && echo -e "\nconfluence.home=${CONFLUENCE_HOME}" \
+        >> "${CONFLUENCE_INSTALL}/confluence/WEB-INF/classes/confluence-init.properties" \
+    && touch -d "@0" "${CONFLUENCE_INSTALL}/conf/server.xml" \
 # Remove build dependencies
-RUN apk del .build-deps
+    && apk del .build-deps
 
 # Switch from root
 USER "${RUN_USER}":"${RUN_GROUP}"
@@ -67,3 +62,17 @@ CMD ["./bin/catalina.sh", "run"]
 # Copy & set entrypoint for manual access
 COPY ./docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
+
+# Metadata
+ARG BUILD_DATE
+ARG VCS_REF
+ARG VERSION
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.name="Confluence - Alpine" \
+      org.label-schema.description="Provides a Docker image for Confluence on Alpine Linux." \
+      org.label-schema.url="https://laslabs.com/" \
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vcs-url="https://github.com/LasLabs/docker-alpine-confluence" \
+      org.label-schema.vendor="LasLabs Inc." \
+      org.label-schema.version=$VERSION \
+      org.label-schema.schema-version="1.0"

@@ -17,7 +17,7 @@ env:
   matrix:
     - TESTS="1"
     - LINT_CHECK="1"
-    - HUB="1" BUILD_ARGS="CONFLUENCE_VERSION=6.0.4" DOCKER_TAG="6.0.4"
+    - HUB="1" BUILD_ARGS="CONFLUENCE_VERSION=6.1.2" DOCKER_TAG="6.1.2"
 
 install:
   - git clone --depth=1 https://github.com/LasLabs/docker-quality-tools.git ${HOME}/docker-quality-tools

@@ -1,7 +1,7 @@
 FROM openjdk:8-alpine
 MAINTAINER LasLabs Inc <support@laslabs.com>
 
-ARG CONFLUENCE_VERSION=6.1.2
+ARG CONFLUENCE_VERSION=6.2.3
 
 ENV CONFLUENCE_HOME=/var/atlassian/application-data/confluence
 ENV CONFLUENCE_INSTALL=/opt/atlassian/confluence

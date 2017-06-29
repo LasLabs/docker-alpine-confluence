@@ -3,21 +3,26 @@ MAINTAINER LasLabs Inc <support@laslabs.com>
 
 ARG CONFLUENCE_VERSION=6.1.2
 
-ENV CONFLUENCE_HOME=/var/atlassian/application-data/confluence
-ENV CONFLUENCE_INSTALL=/opt/atlassian/confluence
+ARG CONFLUENCE_HOME=/var/atlassian/application-data/confluence
+ARG CONFLUENCE_INSTALL=/opt/atlassian/confluence
 
-ENV CONFLUENCE_DOWNLOAD_URI=https://www.atlassian.com/software/confluence/downloads/binary/atlassian-confluence-${CONFLUENCE_VERSION}.tar.gz
+ARG CONFLUENCE_DOWNLOAD_URI=https://www.atlassian.com/software/confluence/downloads/binary/atlassian-confluence-${CONFLUENCE_VERSION}.tar.gz
 
-ENV RUN_USER=confluence
-ENV RUN_GROUP=confluence
+ARG RUN_USER=confluence
+ARG RUN_GROUP=confluence
+
+ENV LC_ALL=C
 
 # Setup Confluence User & Group
 RUN addgroup -S "${RUN_GROUP}" \
     && adduser -S -s /bin/false -G "${RUN_GROUP}" "${RUN_USER}" \
 # Install build deps
     && apk add --no-cache --virtual .build-deps \
+        bash \
         curl \
+        fontconfig \
         tar \
+        ttf-dejavu \
 # Create home, install, and conf dirs
     && mkdir -p "${CONFLUENCE_HOME}" \
                  "${CONFLUENCE_INSTALL}/conf" \
@@ -50,8 +55,8 @@ USER "${RUN_USER}":"${RUN_GROUP}"
 EXPOSE 8090
 EXPOSE 8091
 
-# Persist both the install and home dirs
-VOLUME ["${CONFLUENCE_INSTALL}", "${CONFLUENCE_HOME}"]
+# Persist both the install and home dirs + JRE security folder (cacerts)
+VOLUME ["${CONFLUENCE_INSTALL}", "${CONFLUENCE_HOME}", "${JAVA_HOME}/jre/lib/security/"]]
 
 # Set working directory to install directory
 WORKDIR "${CONFLUENCE_INSTALL}"

@@ -8,16 +8,12 @@ services:
 env:
   global:
     # These are for pushing to DockerHub
-    - DOCKER_REPO="laslabs/alpine-confluence"
-    - DOCKER_USER="laslabsbot"
-    - secure: "U4Xgp0jeV6/OaKUI0ajdJlk7DRazuTPD56mHpmXjihp9RM4aOWzn7/iQsnII8ZkWJIajqIBUvN5vsQ3tMOX0tkFI1ilUEp4c/EPuJVb2FQnRZTW9arVlk1mafESeeGebrqgZ8BMX016JaQtQOpHT0yFp6p3M+EiWwMxOWF64eublVEgJFlZmesQwz1Q5Gt48/jbV8+kVEKvf56F56qAHriBfbzF0x2jm8i342GE8U52NrgksKoNQSchYJZzA9z2GKnfjuStTV26RAcUWk2gZeBl3qBmZoL5L1nr5YaisHTVZdxkNiaoXkkyi2/vA3mWDMCSvB/4MujYvehc+JMfYE8hGvfwQ+EN5Blmz9EQf7i4WyeghajU7MlR5ZQ09GPGWt92Yo3ukxMSolFqeEcPJMYt6g6w4QhlSeVWgp6sOL7GJ9ShltdTeTHe3bwDp3PRgcF2YEU8wtEbIVAkAXB81gwzjaWY17Xmib6os2BxSqBVCNT/rl8VfMpiciIQa7WrQ3JDeqWmcZXQsguyHXRd8rgixzMYxkf9VJae7Cf+E0nJ/BGGhAYVoZBi45PGf2tJdzU8yS1OXskspFcu/st2BTQHYAsHa22TYUBt2bWUW+IF90t4Kas8SYWdchi2qC/eHLKtoV7vUAeeVp9zjFrtF6LkVVXZTCpEtPPlkJFpTlKE="
     - PORTS="8090:8090"
     - LINT_IGNORE="DL3000,SC2086"
 
   matrix:
     - TESTS="1"
     - LINT_CHECK="1"
-    - HUB="1" BUILD_ARGS="CONFLUENCE_VERSION=6.0.4" DOCKER_TAG="6.0.4"
 
 install:
   - git clone --depth=1 https://github.com/LasLabs/docker-quality-tools.git ${HOME}/docker-quality-tools

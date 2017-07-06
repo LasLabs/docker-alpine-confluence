@@ -3,8 +3,9 @@ MAINTAINER LasLabs Inc <support@laslabs.com>
 
 ARG CONFLUENCE_VERSION=6.2.3
 ARG POSTGRES_DRIVER_VERSION=42.1.1
+ARG MYSQL_DRIVER_VERSION=5.1.38
 
-ARG CONFLUENCE_HOME=/var/atlassian/application-data/confluence
+ARG CONFLUENCE_HOME=/var/atlassian/confluence
 ARG CONFLUENCE_INSTALL=/opt/atlassian/confluence
 
 ARG CONFLUENCE_DOWNLOAD_URI=https://www.atlassian.com/software/confluence/downloads/binary/atlassian-confluence-${CONFLUENCE_VERSION}.tar.gz
@@ -36,7 +37,12 @@ RUN addgroup -S "${RUN_GROUP}" \
 # Update the Postgres library to allow non-archaic Postgres versions
     && cd "${CONFLUENCE_INSTALL}/confluence/WEB-INF/lib" \
     && rm -f "./postgresql-9.*" \
-    && curl -O "https://jdbc.postgresql.org/download/postgresql-${POSTGRES_DRIVER_VERSION}.jar" \
+    && curl -Os "https://jdbc.postgresql.org/download/postgresql-${POSTGRES_DRIVER_VERSION}.jar" \
+# Add MySQL library
+    && curl -Ls "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-${MYSQL_DRIVER_VERSION}.tar.gz" \
+        | tar -xz --directory "${CONFLUENCE_INSTALL}/confluence/WEB-INF/lib" \
+            --strip-components=1 --no-same-owner \
+            "mysql-connector-java-${MYSQL_DRIVER_VERSION}/mysql-connector-java-${MYSQL_DRIVER_VERSION}-bin.jar" \
 # Setup permissions
     && chmod -R 700 "${CONFLUENCE_HOME}" \
                      "${CONFLUENCE_INSTALL}/conf" \
@@ -60,10 +66,9 @@ USER "${RUN_USER}":"${RUN_GROUP}"
 
 # Expose ports
 EXPOSE 8090
-EXPOSE 8091
 
-# Persist both the install and home dirs + JRE security folder (cacerts)
-VOLUME ["${CONFLUENCE_INSTALL}", "${CONFLUENCE_HOME}", "${JAVA_HOME}/jre/lib/security/"]]
+# Persist both the logs and home dirs + JRE security folder (cacerts)
+VOLUME ["${CONFLUENCE_INSTALL}/logs", "${CONFLUENCE_HOME}", "${JAVA_HOME}/jre/lib/security/"]
 
 # Set working directory to install directory
 WORKDIR "${CONFLUENCE_INSTALL}"

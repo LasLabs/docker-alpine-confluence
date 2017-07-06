@@ -7,7 +7,6 @@ services:
 
 env:
   global:
-    # These are for pushing to DockerHub
     - PORTS="8090:8090"
     - LINT_IGNORE="DL3000,SC2086"
 

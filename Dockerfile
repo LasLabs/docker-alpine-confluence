@@ -2,6 +2,7 @@ FROM openjdk:8u121-alpine
 MAINTAINER LasLabs Inc <support@laslabs.com>
 
 ARG CONFLUENCE_VERSION=6.2.3
+ARG POSTGRES_DRIVER_VERSION=42.1.1
 
 ARG CONFLUENCE_HOME=/var/atlassian/application-data/confluence
 ARG CONFLUENCE_INSTALL=/opt/atlassian/confluence
@@ -32,6 +33,10 @@ RUN addgroup -S "${RUN_GROUP}" \
     && curl -Ls "${CONFLUENCE_DOWNLOAD_URI}" \
         | tar -xz --directory "${CONFLUENCE_INSTALL}" \
             --strip-components=1 --no-same-owner \
+# Update the Postgres library to allow non-archaic Postgres versions
+    && cd "${CONFLUENCE_INSTALL}/confluence/WEB-INF/lib" \
+    && rm -f "./postgresql-9.*" \
+    && curl -O "https://jdbc.postgresql.org/download/postgresql-${POSTGRES_DRIVER_VERSION}.jar" \
 # Setup permissions
     && chmod -R 700 "${CONFLUENCE_HOME}" \
                      "${CONFLUENCE_INSTALL}/conf" \

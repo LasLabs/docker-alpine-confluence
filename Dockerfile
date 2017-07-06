@@ -67,8 +67,8 @@ USER "${RUN_USER}":"${RUN_GROUP}"
 # Expose ports
 EXPOSE 8090
 
-# Persist both the logs and home dirs + JRE security folder (cacerts)
-VOLUME ["${CONFLUENCE_INSTALL}/logs", "${CONFLUENCE_HOME}", "${JAVA_HOME}/jre/lib/security/"]
+# Persist some of the install dir + the home dir + JRE security folder (cacerts)
+VOLUME ["${CONFLUENCE_INSTALL}/logs", "${CONFLUENCE_INSTALL}/conf", "${CONFLUENCE_HOME}", "${JAVA_HOME}/jre/lib/security/"]
 
 # Set working directory to install directory
 WORKDIR "${CONFLUENCE_INSTALL}"

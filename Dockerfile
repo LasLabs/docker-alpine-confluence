@@ -12,7 +12,9 @@ ARG CONFLUENCE_DOWNLOAD_URI=https://www.atlassian.com/software/confluence/downlo
 ARG RUN_USER=confluence
 ARG RUN_GROUP=confluence
 
-ENV LC_ALL=C
+ENV LC_ALL=C \
+    CONFLUENCE_HOME=$CONFLUENCE_HOME \
+    CONFLUENCE_INSTALL=$CONFLUENCE_INSTALL
 
 # Setup Confluence User & Group + directories
 RUN addgroup -S "${RUN_GROUP}" \
@@ -76,6 +78,7 @@ CMD ["./bin/catalina.sh", "run"]
 
 # Copy & set entrypoint for manual access
 COPY ./docker-entrypoint.sh /
+COPY ./entrypoint.d/ /entrypoint.d/
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 # Metadata
